@@ -33,9 +33,12 @@ score(#{tok := Tok, session := Session}, Premise, Hypothesis) ->
     case onyx:run(Session, Inputs) of
         {error, _} = Err -> Err;
         {ok, Outputs}    ->
-            Tensor = hd(maps:values(Outputs)),
-            Logits = onyx:to_list(Tensor),
-            {ok, entailment_prob(Logits)}
+            case maps:values(Outputs) of
+                []         -> {error, no_model_outputs};
+                [Tensor|_] ->
+                    Logits = onyx:to_list(Tensor),
+                    {ok, entailment_prob(Logits)}
+            end
     end.
 
 %% Build input map filtered to only the names the model declares.
@@ -73,6 +76,8 @@ softmax(Logits) ->
 
 %% Extract entailment probability (index 3 = label 2) from 3-class logit output.
 %% XNLI label order: 0=contradiction, 1=neutral, 2=entailment.
-entailment_prob(Logits) ->
+entailment_prob(Logits) when length(Logits) >= 3 ->
     Probs = softmax(Logits),
-    lists:nth(3, Probs).
+    lists:nth(3, Probs);
+entailment_prob(_) ->
+    error(bad_logit_shape).
