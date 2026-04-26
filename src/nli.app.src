@@ -1,0 +1,8 @@
+{application, nli, [
+    {description, "Natural Language Inference scoring via multilingual ONNX model"},
+    {vsn, "0.1.0"},
+    {applications, [kernel, stdlib, tok, onyx]},
+    {env, []},
+    {licenses, ["Apache-2.0"]},
+    {links, [{"GitHub", "https://github.com/roquess/nli"}]}
+]}.

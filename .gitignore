@@ -1,0 +1,4 @@
+_build/
+erl_crash.dump
+rebar.lock
+test/nli_SUITE_data/model/
