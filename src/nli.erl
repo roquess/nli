@@ -74,10 +74,10 @@ softmax(Logits) ->
     Sum  = lists:sum(Exps),
     [E / Sum || E <- Exps].
 
-%% Extract entailment probability (index 3 = label 2) from 3-class logit output.
-%% XNLI label order: 0=contradiction, 1=neutral, 2=entailment.
+%% Extract entailment probability from 3-class logit output.
+%% symanto/xlm-roberta-base-snli-mnli-anli-xnli label order: 0=entailment, 1=neutral, 2=contradiction.
 entailment_prob(Logits) when length(Logits) >= 3 ->
     Probs = softmax(Logits),
-    lists:nth(3, Probs);
+    lists:nth(1, Probs);
 entailment_prob(_) ->
     error(bad_logit_shape).
