@@ -3,12 +3,14 @@
 -export([all/0, suite/0,
          load_missing_tokenizer/1,
          load_missing_model/1,
-         score_entailment_higher_than_contradiction/1, score_range/1]).
+         score_entailment_higher_than_contradiction/1, score_range/1,
+         max_tokens_and_count_tokens/1]).
 
 suite() -> [{timetrap, {seconds, 30}}].
 
 all() -> [load_missing_tokenizer, load_missing_model,
-          score_entailment_higher_than_contradiction, score_range].
+          score_entailment_higher_than_contradiction, score_range,
+          max_tokens_and_count_tokens].
 
 load_missing_tokenizer(_Config) ->
     {error, _} = nli:load("/nonexistent/tokenizer.json",
@@ -52,4 +54,17 @@ score_range(Config) ->
             nli:unload(N),
             true = S >= 0.0,
             true = S =< 1.0
+    end.
+
+max_tokens_and_count_tokens(Config) ->
+    {TokPath, ModelPath} = model_path(Config),
+    case filelib:is_regular(ModelPath) of
+        false -> {skip, "NLI model not present"};
+        true  ->
+            {ok, N} = nli:load(TokPath, ModelPath),
+            MaxTok  = nli:max_tokens(N),
+            true    = is_integer(MaxTok) andalso MaxTok > 0,
+            Cnt     = nli:count_tokens(N, <<"hello world">>),
+            true    = Cnt > 0 andalso Cnt =< MaxTok,
+            nli:unload(N)
     end.

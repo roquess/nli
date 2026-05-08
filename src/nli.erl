@@ -1,5 +1,5 @@
 -module(nli).
--export([load/2, score/3, unload/1]).
+-export([load/2, score/3, unload/1, max_tokens/1, count_tokens/2]).
 -opaque nli() :: map().
 -export_type([nli/0]).
 
@@ -20,6 +20,16 @@ load(TokPath, ModelPath) ->
 -spec unload(nli()) -> ok.
 unload(#{session := Session}) ->
     onyx:unload(Session).
+
+%% Return the tokenizer's maximum input length in tokens.
+-spec max_tokens(nli()) -> pos_integer().
+max_tokens(#{tok := Tok}) ->
+    maps:get(max_length, Tok).
+
+%% Count the number of tokens the tokenizer would produce for Text.
+-spec count_tokens(nli(), binary()) -> non_neg_integer().
+count_tokens(#{tok := Tok}, Text) ->
+    tok:count_tokens(Tok, Text).
 
 %% Return the probability that Premise entails Hypothesis. Range [0.0, 1.0].
 %% Encodes the pair as: "Premise Hypothesis", runs ONNX inference.
