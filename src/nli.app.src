@@ -1,6 +1,6 @@
 {application, nli, [
     {description, "Natural Language Inference scoring via multilingual ONNX model"},
-    {vsn, "0.2.0"},
+    {vsn, "0.2.1"},
     {applications, [kernel, stdlib, tok, onyx]},
     {env, []},
     {licenses, ["Apache-2.0"]},
